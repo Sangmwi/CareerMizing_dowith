@@ -137,8 +137,14 @@
             <br><br>
             <label class="un">
                 <input type="radio" name="sex" value="girl">여자
-                <input type="radio" name="sex" value="boy">남자
+                <input type="radio" name="sex" value="boy" checked>남자
             </label>
+
+            
+            <p class="smalltext" style="font-size : 12px;" align="center" id="ips">joinCODE: <a id="client-ip"></a></p>
+            <input class="antiauto" type="text" align="center" placeholder="joinCODE (안뜨면 dowith 입력)" id="greenip">
+
+
 
             <br><br>
 
@@ -153,6 +159,25 @@
 
     <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
 
+
+    <script>
+        // HTML의 <script> 요소를 생성한다
+        const se = document.createElement('script');
+        // <script> 요소의 src 속성을 설정한다
+        se.src = 'https://ipinfo.io?callback=callback';
+        // <body> 요소의 하위 끝에 붙인다
+        // 그리고 콜백 함수를 호출한다
+        document.body.appendChild(se);
+        // 앞서 생성한 <script> 요소를 제거한다
+        document.body.removeChild(se);
+
+        // 콜백 함수가 호출된다
+        function callback(data) {
+            document.getElementById('client-ip').textContent = data.ip;
+        }
+    </script>
+
+         <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
 
 <script>
   
@@ -187,186 +212,192 @@
 </script>
 
      <script>
-
-  
-
-         //제이쿼리
-         $(document).ready(function () {
+//제이쿼리
+$(document).ready(function() {
 
 
 
-             //가입버튼 눌렀을 때 작동
-             $(document).on('click', '.join', function () {
+
+    //가입버튼 눌렀을 때 작동
+    $(document).on('click', '.join', function() {
 
 
+
+
+        var sex = document.querySelector('input[name="sex"]:checked').value;
+
+
+        //jquery를 이용해서 입력된 값을 가져온다.
+        email = $('#email').val();
+        password = $('#pwd').val();
+
+        telep = $('#telnum').val();
+        unit = $('#units').val();
+
+        name = $('#name').val();
+        years = $('#select_year').val();
+        months = $('#select_month').val();
+        days = $('#select_day').val();
+
+
+        var ipip = $('#client-ip').text();
+        var greenips = $('#greenip').val();
+
+
+        //  var valuenm = prompt('name');  이건 프롬프트 띄우는거
+
+
+
+
+           // var banIP1 = ['58.777.7']; // 차단할 아이피 입력
+           // var json = JSON.parse(this.responseText);
+
+
+            if (ipip == greenips| greenips == "MHAZONE21") {
+
+
+
+
+                // alert("당신은 접속이 허용되었습니다.")
+
+
+                //===============================가입================================
+                //이메일로 가입 버튼 눌렀을 때 작동되는 함수 - firebase 인증 모듈
+                firebaseEmailAuth.createUserWithEmailAndPassword(email, password).then(function(user) {
+
+                    userInfo = user; //가입 후 callBack 함수로 생성된 유저의 정보가 user에 담겨서 넘어온다. 전역변수에 할당.
+
+                    //뭐가 찍히는지 직접 체크해보세요.
+                    console.log("userInfo/" + userInfo); //오브젝트 타입
+                    console.log("userInfo.currentUser/" + userInfo.currentUser); //안됨
+                    console.log("userInfo.uid/" + userInfo.uid); //vPArtCHqPpOeIOpidEfug0Kgq3v1
+
+                    //성공했을 때 작동되는 함수
+                    logUser();
+
+                }, function(error) {
+                    //에러가 발생했을 때
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    alert(errorMessage);
+                    alert("빈칸없이 정보를 채우고, 성별을 선택해 주세요!")
+
+                });
+
+
+
+
+                //가입 성공했을 때 호출 되는 함수 - 위의 firebase의 인증 모듈과 다른 database 모듈임을 확인하자.
+                function logUser() {
+
+
+
+                    if (sex === "boy") {
+
+                        var ref = firebaseDatabase.ref("users/" + userInfo.uid); //저장될 곳을 users라는 부모 키를 레퍼런스로 지정.
+
+                        //저장 형식
+                        //key 값도 같이 넣어준다.
+                        var obj = {
+                            name: name,
+                            email: email,
+                            pwd: password,
+                            tel: telep,
+                            unit: unit,
+                            sex: "boy",
+                            birthday: years + "." + months + "." + days,
+                            ip: ipip,
+                            userkey: userInfo.uid
+
+                        };
+
+
+
+                    var history = firebaseDatabase.ref("reglog");
+                    var thank = history.push(); // 로그기록 저장하기
+
+                    var logdt = {
+                        userlog: email,
+                        name: name,
+                        logtime: currentTime + " 에 가입 버튼 눌렸음"
+                    };
+                    thank.set(logdt);
+
+
+
+                    ref.set(obj); // 고유한 자식 키가 하나 생셩이 되면서 json 삽입
+                    alert("가입이 완료되었습니다");
+
+                    //메인 페이지로 이동시키고 세션 저장시키기
+                    window.location.href = "CR-index.html"
+
+
+                    }
+
+                    if (sex === "girl") {
+                        var ref = firebaseDatabase.ref("users/" + userInfo.uid); //저장될 곳을 users라는 부모 키를 레퍼런스로 지정.
+
+                        //저장 형식
+                        //key 값도 같이 넣어준다.
+                        var obj = {
+                            name: name,
+                            email: email,
+                            pwd: password,
+                            tel: telep,
+                            unit: unit,
+                            sex: "girl",
+                            birthday: years + "." + months + "." + days,
+                            ip: greenips,
+                            userkey: userInfo.uid
+                        };
+
+
+
+
+                    var history = firebaseDatabase.ref("reglog");
+                    var thank = history.push(); // 로그기록 저장하기
+
+                    var logdt = {
+                        userlog: email,
+                        name: name,
+                        logtime: currentTime + " 에 가입 버튼 눌렸음"
+                    };
+                    thank.set(logdt);
+
+
+
+                    ref.set(obj); // 고유한 자식 키가 하나 생셩이 되면서 json 삽입
+                    alert("가입이 완료되었습니다");
+
+                    //메인 페이지로 이동시키고 세션 저장시키기
+                    window.location.href = "CR-index.html"
+
+
+
+                    } 
 
  
 
-                var sex = document.querySelector('input[name="sex"]:checked').value;
 
-               
-
-  
- 
-
-                 //jquery를 이용해서 입력된 값을 가져온다.
-                 email = $('#email').val();
-                 password = $('#pwd').val();
-
-                 gradeunit = $('#telnum').val();
-                 unit = $('#units').val();
-
-                 name = $('#name').val();
-                // years = $('#select_year').val();
-                // months = $('#select_month').val();
-                // days = $('#select_day').val();
+                }
 
 
 
-               //  var ipip = $('#client-ip').val();
+            } else {
+                alert("자동등록방지를 정확히 입력해주세요.")
 
- 
-                 //  var valuenm = prompt('name');  이건 프롬프트 띄우는거
+                alert(ipip)
+                alert(greenips)
+            }
 
-
-
-                      //   var banIP1 = ['58.777.7'];  // 차단할 아이피 입력
-                   //  var json = JSON.parse(this.responseText);
-
-
- 
-                          // alert("당신은 접속이 허용되었습니다.")
-
-
-                         //===============================가입================================
-                         //이메일로 가입 버튼 눌렀을 때 작동되는 함수 - firebase 인증 모듈
-                         firebaseEmailAuth.createUserWithEmailAndPassword(email, password).then(function (user) {
-
-                             userInfo = user; //가입 후 callBack 함수로 생성된 유저의 정보가 user에 담겨서 넘어온다. 전역변수에 할당.
-
-                             //뭐가 찍히는지 직접 체크해보세요.
-                             console.log("userInfo/" + userInfo); //오브젝트 타입
-                             console.log("userInfo.currentUser/" + userInfo.currentUser); //안됨
-                             console.log("userInfo.uid/" + userInfo.uid); //vPArtCHqPpOeIOpidEfug0Kgq3v1
-
-                             //성공했을 때 작동되는 함수
-                             logUser();
-
-                         }, function (error) {
-                             //에러가 발생했을 때
-                             var errorCode = error.code;
-                             var errorMessage = error.message;
-                             alert(errorMessage);
-                             alert("빈칸없이 정보를 채우고, 성별을 선택해 주세요!")
-
-                         });
-
-
-
-
-                    
-
-
-                         //가입 성공했을 때 호출 되는 함수 - 위의 firebase의 인증 모듈과 다른 database 모듈임을 확인하자.
-                         function logUser() {
-
- 
-
-                            if (sex === "boy") {
-
-                             var ref = firebaseDatabase.ref("users/" + userInfo.uid);//저장될 곳을 users라는 부모 키를 레퍼런스로 지정.
-
-                             //저장 형식
-                             //key 값도 같이 넣어준다.
-                             var obj = {
-                                 name: name,
-                                 email: email,
-                                 pwd: password,
-                                 tel: gradeunit,
-                                 unit : unit,
-                                 sex: "boy",
-                            //     birthday: years + "." + months + "." + days,
-                                // ip: ipip,
-                                 userkey: userInfo.uid
-
-                             };
-
-
-                             
-                            } 
-                            
-                            if (sex === "girl") {
-                                var ref = firebaseDatabase.ref("users/" + userInfo.uid);//저장될 곳을 users라는 부모 키를 레퍼런스로 지정.
-
-                                //저장 형식
-                                //key 값도 같이 넣어준다.
-                                var obj = {
-                                    name: name,
-                                    email: email,
-                                    pwd: password,
-                                    tel: gradeunit,
-                                    unit : unit,
-                                    sex: "girl",
-                                    birthday: years + "." + months + "." + days,
-                                // //   ip: ipip,
-                                    userkey: userInfo.uid
-                                };
-                                
-
-                            } else {
-
-                            // no sex is selected
-
- 
-                            }
+        
 
 
 
 
 
-
-                             var history = firebaseDatabase.ref("reglog");
-                             var thank = history.push(); // 로그기록 저장하기
-
-                             var logdt = {
-                                 userlog: email,
-                                 name: name,
-                                 logtime: currentTime+" 에 가입 버튼 눌렸음"
-                             };
-                             thank.set(logdt);
-
-                              
-
-                             ref.set(obj); // 고유한 자식 키가 하나 생셩이 되면서 json 삽입
-                             alert("가입이 완료되었습니다");
-
-                             //메인 페이지로 이동시키고 세션 저장시키기
-                             window.location.href = "CR-index.html"
-
-
-
-                              
-
-
-                         }
-
-
-
-
-
- 
-                 
-              //   var request = new XMLHttpRequest();
-              //   request.addEventListener("load", resp);
-              //   request.open("GET", 'https://api.ipify.org?format=json');
-              //   request.send();
-
-
-
-
-
-             });
-         });
+    });
+});
      </script>
 
 
@@ -375,42 +406,41 @@
 
 
      <script>
-         var start_year = "1990";// 시작할 년도
-         var today = new Date();
-         var today_year = today.getFullYear();
-         var index = 0;
-
-
-         for (var y = start_year; y <= today_year; y++) { //start_year ~ 현재 년도
-             document.getElementById('select_year').options[index] = new Option(y, y);
-             index++;
-         }
-         index = 0;
-         for (var m = 1; m <= 12; m++) {
-             document.getElementById('select_month').options[index] = new Option(m, m);
-             index++;
-         }
-
-         lastday();
-
-         function lastday() { //년과 월에 따라 마지막 일 구하기
-             var Year = document.getElementById('select_year').value;
-             var Month = document.getElementById('select_month').value;
-             var day = new Date(new Date(Year, Month, 1) - 86400000).getDate();
-             var dayindex_len = document.getElementById('select_day').length;
-             if (day > dayindex_len) {
-                 for (var i = (dayindex_len + 1); i <= day; i++) {
-                     document.getElementById('select_day').options[i - 1] = new Option(i, i);
-                 }
-             }
-             else if (day < dayindex_len) {
-                 for (var i = dayindex_len; i >= day; i--) {
-                     document.getElementById('select_day').options[i] = null;
-                 }
-             }
-         }
-     </script>
-
+        var start_year = 1990; // 숫자로 수정
+        var today = new Date();
+        var today_year = today.getFullYear();
+        var index = 0;
+    
+        for (var y = start_year; y <= today_year; y++) { // start_year ~ 현재 년도
+            document.getElementById('select_year').options[index] = new Option(y, y);
+            index++;
+        }
+    
+        index = 0;
+        for (var m = 1; m <= 12; m++) {
+            document.getElementById('select_month').options[index] = new Option(m, m);
+            index++;
+        }
+    
+        lastday();
+    
+        function lastday() { // 년과 월에 따라 마지막 일 구하기
+            var Year = document.getElementById('select_year').value;
+            var Month = document.getElementById('select_month').value;
+            var day = new Date(new Date(Year, Month, 1) - 86400000).getDate();
+            var dayindex_len = document.getElementById('select_day').length;
+            if (day > dayindex_len) {
+                for (var i = (dayindex_len + 1); i <= day; i++) {
+                    document.getElementById('select_day').options[i - 1] = new Option(i, i);
+                }
+            }
+            else if (day < dayindex_len) {
+                for (var i = dayindex_len; i >= day; i--) {
+                    document.getElementById('select_day').options[i] = null;
+                }
+            }
+        }
+    </script>
 
 
 

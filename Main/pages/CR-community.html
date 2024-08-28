@@ -1055,25 +1055,17 @@ document.addEventListener('click', function(event) {
 <script>
   
 
-
-  	 
-    //스크롤 자동으로 내리기
-    //setInterval(updateScroll,1000);   
-
-	function updateScroll(){
-    var element = document.getElementById("scrollz");
-    element.scrollTop = element.scrollHeight;
-    }
-  
-
-    boardList();
-
-	//세션 체크 함수
  
-
 
 	$(document).ready(function () {
 
+
+    
+    
+  
+
+
+      
     $(document).on('click', '.write', function () {
       // 네비게이션 메뉴의 text값 가져오기
       var seseionCheck = document.getElementById("loginmenu").textContent;
@@ -1189,9 +1181,10 @@ document.addEventListener('click', function(event) {
 
 
 	//글 목록가져와서 뿌려주기
-	function boardList() {
+	function boardListFun() {
 		//alert("보드 로드 완료")
 
+    
 		//로그인한 유저라면
 		if (loginUserKey) {
 			//alert(loginUserKey)
@@ -1207,40 +1200,14 @@ document.addEventListener('click', function(event) {
 			thanksRef.on('child_added', on_notice_list)
 
 		} else {
-      alert("비 로그인 유저에게는 게시물이 표시되지 않습니다. ");
-      window.location.href = "CR-authentification.html"
+      alert("비 로그인, 오류 유저에게는 게시물이 표시되지 않습니다. ");
+      //window.location.href = "CR-authentification.html"
 
 		}
 
 	}
 
-
-
-
-  // === 비속어필터 === 비속어필터 === 비속어필터 === 비속어필터 === 비속어필터 === 비속어필터 === 비속어필터 === 비속어필터 
-  const fs = require('fs');
-  const path = require('path');
-  
-  // 비속어 리스트 파일을 읽어오기
-  function loadReplacementMap(filePath) {
-      const replacementMap = new Map();
-      
-      // 파일 경로를 절대 경로로 변환 (상대 경로 사용)
-      const absolutePath = path.resolve(__dirname, filePath);
-  
-      // 파일을 동기로 읽어오기
-      const data = fs.readFileSync(absolutePath, 'utf8');
-  
-      // 각 줄을 분리하여 key-value로 맵핑
-      data.split('\n').forEach(line => {
-          const [badWord, replacement] = line.split(',');
-          if (badWord && replacement) {
-              replacementMap.set(badWord.trim(), replacement.trim());
-          }
-      });
-  
-      return replacementMap;
-  }
+ 
   
   // 대체 작업을 수행하는 함수
   function replaceBadWords(text, replacementMap) {
