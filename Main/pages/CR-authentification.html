@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+        .login-container input[type="email"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        .login-container a {
+            display: block;
+            margin: 10px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .login-container a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container" id="login_div">
+    <h2>로그인</h2>
+    <input type="email" id="email" placeholder="이메일 입력" required>
+    <input type="password" id="pwd" placeholder="비밀번호 입력" required>
+    <button class="login">로그인</button>
+    <a href="./">아이디/비밀번호 찾기</a>
+    <a href="./CR-signup.html">회원가입</a>
+</div>
+
+<div id="user_div" style="display:none;">
+    <p id="user_para">로그인한 계정 :</p>
+    <button onclick="logout()">로그아웃</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+
+
+<script>
+  
+
+    var firebaseEmailAuth; //파이어베이스 email 인증 모듈 전역변수
+    var firebaseDatabase; //파이어베이스 db 모듈 전역변수
+    var name; //유저 이름
+    var loginUserKey; //로그인한 유저의 부모 key
+    var userInfo; //로그인한 유저의 정보 object type
+  var brdno;
+ 
+
+    //파이어 베이스 초기화 코드
+    var config = {
+    apiKey: "AIzaSyAffW1gPzgFKgiwGw4OBa9o1umQ8YGpaE8",
+    authDomain: "careermizing.firebaseapp.com",
+    databaseURL: "https://careermizing-default-rtdb.firebaseio.com",
+    projectId: "careermizing",
+    storageBucket: "careermizing.appspot.com",
+    messagingSenderId: "836478653396",
+    appId: "1:836478653396:web:f1178a28045faa90dc7c41",
+    measurementId: "G-BK8DTN3C6Y"
+     
+    };
+    //파이어베이스 초기화
+    firebase.initializeApp(config);
+    //인증모듈 객체 가져오기
+    firebaseEmailAuth = firebase.auth();
+    //데이터베이스 모듈객체 가져오기
+    firebaseDatabase = firebase.database();
+ 
+</script>
+
+
+<script>
+  
+  $(document).ready(function () {
+      $(document).on('click', '.login', function () {
+          var email = $('#email').val();
+          var password = $('#pwd').val();
+          alert("로그인 중...:" + email + ":" + password);
+
+          firebase.auth().signInWithEmailAndPassword(email, password)
+              .then(function (firebaseUser) {
+                  loginSuccess(firebaseUser);
+              })
+              .catch(function (error) {
+                  alert(error.message);
+                  alert("로그인 실패");
+              });
+      });
+  });
+
+  function loginSuccess(firebaseUser) {
+      alert("로그인 성공");
+      firebase.database().ref("users/" + firebaseUser.user.uid).once('value').then(function (snapshot) {
+          // 로그인한 유저의 정보를 처리할 수 있습니다.
+      });
+      window.location.href = "CR-index.html";
+  }
+
+  firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+          document.getElementById("user_div").style.display = "block";
+          document.getElementById("login_div").style.display = "none";
+          document.getElementById("user_para").innerHTML = "로그인한 계정 : " + user.email;
+      } else {
+          document.getElementById("user_div").style.display = "none";
+          document.getElementById("login_div").style.display = "block";
+      }
+  });
+
+  function logout() {
+      firebase.auth().signOut();
+      window.location.href = "CR-index.html";
+  }
+</script>
+<script src="ipbanned.js"></script>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+ 
