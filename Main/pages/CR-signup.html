@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <title>학사존</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .main {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sign {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .form1 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .un {
+            font-size: 14px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            text-align: center;
+            background-color: bisque;
+            color: brown;
+        }
+
+        .un::placeholder {
+            color: brown;
+        }
+
+        .smalltext {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        select {
+            font-size: 14px;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        label.un {
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input[type="radio"] {
+            margin-left: 10px;
+            margin-right: 5px;
+        }
+
+        .submit {
+            font-size: 16px;
+            background-color: #ff8c00;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit:hover {
+            background-color: #ff7500;
+        }
+
+        .submit:active {
+            background-color: #ff6000;
+        }
+
+        .join {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <p class="sign" align="center">정보등록시스템</p>
+        <form class="form1">
+
+            <input class="un" type="text" align="center" style="color: brown; background-color: bisque;" placeholder="이메일 주소" id="email">
+            <input class="un" type="text" align="center" style="color: brown; background-color: bisque;" placeholder="비밀번호" id="pwd">
+            <input class="un" type="text" align="center" placeholder="이름 (예: 안중근)" id="name">
+            <input class="un" type="text" align="center" placeholder="전화번호 : (예 : 010-XXXX-XXXX)" id="telnum">
+            <input class="un" type="text" align="center" placeholder="유형 : (에:학생 / 채용자)" id="units">
+
+            <p class="smalltext" align="center">생년월일 입력</p>
+            <select class="year" id="select_year" onchange="javascript:lastday();"></select>
+            <select class="date" id="select_month" onchange="javascript:lastday();"></select>
+            <select class="date" id="select_day"></select>
+
+            <br><br>
+            <label class="un">
+                <input type="radio" name="sex" value="girl">여자
+                <input type="radio" name="sex" value="boy">남자
+            </label>
+
+            <br><br>
+
+            <a type="button" class="submit btn btn-default join" align="center"><strong>등록하기!</strong></a>
+        </form>
+    </div>
+
+
+
+
+    <script src="../assets/js/time.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+
+
+<script>
+  
+
+    var firebaseEmailAuth; //파이어베이스 email 인증 모듈 전역변수
+    var firebaseDatabase; //파이어베이스 db 모듈 전역변수
+    var name; //유저 이름
+    var loginUserKey; //로그인한 유저의 부모 key
+    var userInfo; //로그인한 유저의 정보 object type
+  var brdno;
+ 
+
+    //파이어 베이스 초기화 코드
+    var config = {
+    apiKey: "AIzaSyAffW1gPzgFKgiwGw4OBa9o1umQ8YGpaE8",
+    authDomain: "careermizing.firebaseapp.com",
+    databaseURL: "https://careermizing-default-rtdb.firebaseio.com",
+    projectId: "careermizing",
+    storageBucket: "careermizing.appspot.com",
+    messagingSenderId: "836478653396",
+    appId: "1:836478653396:web:f1178a28045faa90dc7c41",
+    measurementId: "G-BK8DTN3C6Y"
+     
+    };
+    //파이어베이스 초기화
+    firebase.initializeApp(config);
+    //인증모듈 객체 가져오기
+    firebaseEmailAuth = firebase.auth();
+    //데이터베이스 모듈객체 가져오기
+    firebaseDatabase = firebase.database();
+ 
+</script>
+
+     <script>
+
+  
+
+         //제이쿼리
+         $(document).ready(function () {
+
+
+
+             //가입버튼 눌렀을 때 작동
+             $(document).on('click', '.join', function () {
+
+
+
+ 
+
+                var sex = document.querySelector('input[name="sex"]:checked').value;
+
+               
+
+  
+ 
+
+                 //jquery를 이용해서 입력된 값을 가져온다.
+                 email = $('#email').val();
+                 password = $('#pwd').val();
+
+                 gradeunit = $('#telnum').val();
+                 unit = $('#units').val();
+
+                 name = $('#name').val();
+                // years = $('#select_year').val();
+                // months = $('#select_month').val();
+                // days = $('#select_day').val();
+
+
+
+               //  var ipip = $('#client-ip').val();
+
+ 
+                 //  var valuenm = prompt('name');  이건 프롬프트 띄우는거
+
+
+
+                      //   var banIP1 = ['58.777.7'];  // 차단할 아이피 입력
+                   //  var json = JSON.parse(this.responseText);
+
+
+ 
+                          // alert("당신은 접속이 허용되었습니다.")
+
+
+                         //===============================가입================================
+                         //이메일로 가입 버튼 눌렀을 때 작동되는 함수 - firebase 인증 모듈
+                         firebaseEmailAuth.createUserWithEmailAndPassword(email, password).then(function (user) {
+
+                             userInfo = user; //가입 후 callBack 함수로 생성된 유저의 정보가 user에 담겨서 넘어온다. 전역변수에 할당.
+
+                             //뭐가 찍히는지 직접 체크해보세요.
+                             console.log("userInfo/" + userInfo); //오브젝트 타입
+                             console.log("userInfo.currentUser/" + userInfo.currentUser); //안됨
+                             console.log("userInfo.uid/" + userInfo.uid); //vPArtCHqPpOeIOpidEfug0Kgq3v1
+
+                             //성공했을 때 작동되는 함수
+                             logUser();
+
+                         }, function (error) {
+                             //에러가 발생했을 때
+                             var errorCode = error.code;
+                             var errorMessage = error.message;
+                             alert(errorMessage);
+                             alert("빈칸없이 정보를 채우고, 성별을 선택해 주세요!")
+
+                         });
+
+
+
+
+                    
+
+
+                         //가입 성공했을 때 호출 되는 함수 - 위의 firebase의 인증 모듈과 다른 database 모듈임을 확인하자.
+                         function logUser() {
+
+ 
+
+                            if (sex === "boy") {
+
+                             var ref = firebaseDatabase.ref("users/" + userInfo.uid);//저장될 곳을 users라는 부모 키를 레퍼런스로 지정.
+
+                             //저장 형식
+                             //key 값도 같이 넣어준다.
+                             var obj = {
+                                 name: name,
+                                 email: email,
+                                 pwd: password,
+                                 tel: gradeunit,
+                                 unit : unit,
+                                 sex: "boy",
+                            //     birthday: years + "." + months + "." + days,
+                                // ip: ipip,
+                                 userkey: userInfo.uid
+
+                             };
+
+
+                             
+                            } 
+                            
+                            if (sex === "girl") {
+                                var ref = firebaseDatabase.ref("users/" + userInfo.uid);//저장될 곳을 users라는 부모 키를 레퍼런스로 지정.
+
+                                //저장 형식
+                                //key 값도 같이 넣어준다.
+                                var obj = {
+                                    name: name,
+                                    email: email,
+                                    pwd: password,
+                                    tel: gradeunit,
+                                    unit : unit,
+                                    sex: "girl",
+                                    birthday: years + "." + months + "." + days,
+                                // //   ip: ipip,
+                                    userkey: userInfo.uid
+                                };
+                                
+
+                            } else {
+
+                            // no sex is selected
+
+ 
+                            }
+
+
+
+
+
+
+                             var history = firebaseDatabase.ref("reglog");
+                             var thank = history.push(); // 로그기록 저장하기
+
+                             var logdt = {
+                                 userlog: email,
+                                 name: name,
+                                 logtime: currentTime+" 에 가입 버튼 눌렸음"
+                             };
+                             thank.set(logdt);
+
+                              
+
+                             ref.set(obj); // 고유한 자식 키가 하나 생셩이 되면서 json 삽입
+                             alert("가입이 완료되었습니다");
+
+                             //메인 페이지로 이동시키고 세션 저장시키기
+                             window.location.href = "CR-index.html"
+
+
+
+                              
+
+
+                         }
+
+
+
+
+
+ 
+                 
+              //   var request = new XMLHttpRequest();
+              //   request.addEventListener("load", resp);
+              //   request.open("GET", 'https://api.ipify.org?format=json');
+              //   request.send();
+
+
+
+
+
+             });
+         });
+     </script>
+
+
+
+
+
+
+     <script>
+         var start_year = "1990";// 시작할 년도
+         var today = new Date();
+         var today_year = today.getFullYear();
+         var index = 0;
+
+
+         for (var y = start_year; y <= today_year; y++) { //start_year ~ 현재 년도
+             document.getElementById('select_year').options[index] = new Option(y, y);
+             index++;
+         }
+         index = 0;
+         for (var m = 1; m <= 12; m++) {
+             document.getElementById('select_month').options[index] = new Option(m, m);
+             index++;
+         }
+
+         lastday();
+
+         function lastday() { //년과 월에 따라 마지막 일 구하기
+             var Year = document.getElementById('select_year').value;
+             var Month = document.getElementById('select_month').value;
+             var day = new Date(new Date(Year, Month, 1) - 86400000).getDate();
+             var dayindex_len = document.getElementById('select_day').length;
+             if (day > dayindex_len) {
+                 for (var i = (dayindex_len + 1); i <= day; i++) {
+                     document.getElementById('select_day').options[i - 1] = new Option(i, i);
+                 }
+             }
+             else if (day < dayindex_len) {
+                 for (var i = dayindex_len; i >= day; i--) {
+                     document.getElementById('select_day').options[i] = null;
+                 }
+             }
+         }
+     </script>
+
+
+
+
+</body>
+
+</html>
+
+
+ 
