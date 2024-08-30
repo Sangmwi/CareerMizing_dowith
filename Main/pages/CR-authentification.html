@@ -120,14 +120,19 @@
           var password = $('#pwd').val();
           alert("로그인 중...:" + email + ":" + password);
 
-          firebase.auth().signInWithEmailAndPassword(email, password)
-              .then(function (firebaseUser) {
-                  loginSuccess(firebaseUser);
-              })
-              .catch(function (error) {
-                  alert(error.message);
-                  alert("로그인 실패");
-              });
+              //파이어베이스 이메일 로그인 함수
+              firebaseEmailAuth.signInWithEmailAndPassword(email, password)
+                  .then(function (firebaseUser) {
+
+                      //성공하면 firebaseUser에 유저 정보 값이 담겨 넘어온다.
+                      loginSuccess(firebaseUser);
+
+                  })
+                  .catch(function (error) {
+                      // 실패했을 때 에러 처리
+                      alert(error);
+                      alert("로그인 실패");
+                  });
       });
   });
 
@@ -156,7 +161,7 @@
       window.location.href = "CR-index.html";
   }
 </script>
-<script src="ipbanned.js"></script>
+
 
 
 </body>
