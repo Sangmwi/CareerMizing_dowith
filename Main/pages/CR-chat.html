@@ -427,10 +427,10 @@ firebaseEmailAuth.onAuthStateChanged(user => {
 
 function initializeApp() {
   // 로그인한 유저가 있을 때 실행할 코드
-  boardList(); // 보드 리스트 로드
+  boardListFun(); // 보드 리스트 로드
 }
 
-function boardList() {
+function boardListFun() {
   if (uids) {
       var thanksRef = firebaseDatabase.ref('anounymous');
       thanksRef.on('child_added', on_thanks_list);
